@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hồ sơ & Kết quả dự thi | HCMUE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Manrope:wght@500;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#eef1f4;
+      --card:#ffffff;
+      --text:#1f2933;
+      --muted:#6e7b87;
+      --line:#e4e9ee;
+      --primary:#2f86e5;
+      --primary-soft:#eaf3ff;
+      --primary-dark:#1f6fcf;
+      --shadow:0 8px 24px rgba(31,41,51,.08), 0 2px 6px rgba(31,41,51,.05);
+      --radius-xl:28px;
+      --radius-lg:20px;
+      --radius-md:14px;
+      --menu-width:min(84vw, 320px);
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:"Be Vietnam Pro", sans-serif;
+      background:
+        radial-gradient(circle at top right, rgba(47,134,229,.08), transparent 22%),
+        linear-gradient(180deg, #f1f3f6 0%, #eceff3 100%);
+      color:var(--text);
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+
+    .app{
+      width:min(100%, 820px);
+      margin:0 auto;
+      min-height:100vh;
+      position:relative;
+    }
+
+    .page{
+      padding:22px 18px 28px;
+      transition:filter .28s ease;
+    }
+
+    .page.blurred{
+      filter:blur(4px);
+      pointer-events:none;
+      user-select:none;
+    }
+
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:26px;
+      animation:fadeUp .7s ease both;
+    }
+
+    .menu-btn{
+      width:48px;
+      height:48px;
+      border:none;
+      background:transparent;
+      display:grid;
+      place-items:center;
+      cursor:pointer;
+      border-radius:14px;
+      transition:.25s ease;
+    }
+    .menu-btn:hover{background:rgba(255,255,255,.55)}
+
+    .hamburger{
+      width:24px;
+      height:18px;
+      position:relative;
+    }
+    .hamburger span{
+      position:absolute;
+      left:0;
+      width:100%;
+      height:4px;
+      border-radius:99px;
+      background:#7f8b96;
+    }
+    .hamburger span:nth-child(1){top:0}
+    .hamburger span:nth-child(2){top:7px;width:70%}
+    .hamburger span:nth-child(3){bottom:0}
+
+    .avatar-mini{
+      width:58px;
+      height:58px;
+      border-radius:50%;
+      background:linear-gradient(145deg, #2e8cff, #246fd9);
+      display:grid;
+      place-items:center;
+      color:#fff;
+      font-family:"Manrope", sans-serif;
+      font-weight:800;
+      font-size:1.9rem;
+      border:3px solid #d7d19d;
+      box-shadow:0 6px 16px rgba(47,134,229,.22);
+    }
+
+    .panel{
+      background:rgba(255,255,255,.84);
+      backdrop-filter:blur(10px);
+      border:1px solid rgba(255,255,255,.7);
+      border-radius:var(--radius-xl);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+
+    .profile-card{padding:34px 28px 28px}
+    .identity{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      text-align:center;
+    }
+    .avatar-large{
+      width:220px;
+      max-width:52vw;
+      aspect-ratio:3/4;
+      border-radius:24px;
+      background:linear-gradient(180deg, #cfd6df, #c5ccd5);
+      display:grid;
+      place-items:center;
+      color:#fff;
+      font-size:clamp(2.8rem, 8vw, 4.4rem);
+      font-family:"Manrope", sans-serif;
+      margin-bottom:18px;
+    }
+    .name{
+      font-family:"Manrope", sans-serif;
+      font-size:clamp(2rem, 4vw, 2.5rem);
+      line-height:1.05;
+      font-weight:800;
+      margin:0 0 10px;
+      letter-spacing:-.03em;
+    }
+    .meta{
+      margin:0;
+      color:var(--muted);
+      font-size:clamp(1.05rem, 2.4vw, 1.32rem);
+      line-height:1.8;
+      font-weight:500;
+    }
+    .divider{
+      height:1px;
+      background:var(--line);
+      margin:28px 0 22px;
+    }
+    .btn-outline{
+      width:100%;
+      min-height:68px;
+      border-radius:18px;
+      border:2px solid rgba(47,134,229,.35);
+      background:linear-gradient(180deg, #ffffff, #fbfdff);
+      color:var(--primary);
+      font-weight:800;
+      font-size:clamp(1.15rem, 2.5vw, 1.5rem);
+      font-family:"Be Vietnam Pro", sans-serif;
+      cursor:pointer;
+      transition:.25s ease;
+    }
+    .btn-outline:hover{background:#f2f8ff}
+
+    .details-card{margin-top:26px;padding:34px 34px 28px}
+    .section-title{
+      margin:0 0 30px;
+      font-family:"Manrope", sans-serif;
+      font-size:clamp(2rem, 4vw, 2.6rem);
+      font-weight:800;
+      letter-spacing:-.03em;
+    }
+    .detail-list{display:grid;gap:28px}
+    .label{
+      display:block;
+      color:var(--muted);
+      font-size:clamp(1.15rem, 2.4vw, 1.45rem);
+      font-weight:700;
+      margin-bottom:10px;
+    }
+    .value{
+      margin:0;
+      font-size:clamp(1.45rem, 3vw, 2rem);
+      line-height:1.45;
+      font-weight:500;
+      word-break:break-word;
+    }
+
+    .footer{
+      text-align:center;
+      padding:30px 12px 8px;
+      color:var(--muted);
+    }
+    .footer a{
+      color:var(--primary);
+      text-decoration:none;
+      font-size:clamp(1rem, 2vw, 1.25rem);
+      font-weight:500;
+    }
+    .copyright{margin-top:18px;font-size:clamp(1rem, 2vw, 1.18rem)}
+
+    .side-sheet{
+      position:fixed;
+      inset:0 auto 0 0;
+      width:var(--menu-width);
+      background:#fff;
+      box-shadow:18px 0 40px rgba(31,41,51,.12);
+      transform:translateX(-100%);
+      transition:transform .35s ease;
+      z-index:100;
+      padding:22px 18px 22px 22px;
+      display:flex;
+      flex-direction:column;
+      overflow-y:auto;
+    }
+    .side-sheet.open{transform:translateX(0)}
+
+    .overlay{
+      position:fixed;
+      inset:0;
+      background:rgba(25,35,45,.42);
+      opacity:0;
+      pointer-events:none;
+      transition:.3s ease;
+      z-index:90;
+    }
+    .overlay.show{
+      opacity:1;
+      pointer-events:auto;
+    }
+
+    .logo{
+      width:110px;
+      height:auto;
+      margin-bottom:22px;
+    }
+
+    .sheet-links{
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+
+    .menu-item,
+    .expand-btn,
+    .submenu a{
+      width:100%;
+      text-decoration:none;
+      border:none;
+      background:transparent;
+      display:flex;
+      align-items:center;
+      gap:14px;
+      color:#5f6d79;
+      font-size:1rem;
+      font-weight:600;
+      padding:14px 16px;
+      border-radius:14px;
+      cursor:pointer;
+      text-align:left;
+      font-family:"Be Vietnam Pro", sans-serif;
+    }
+
+    .menu-item.active{
+      background:#edf5ff;
+      color:var(--primary);
+      position:relative;
+    }
+    .menu-item.active::before{
+      content:"";
+      position:absolute;
+      left:0;
+      top:12px;
+      bottom:12px;
+      width:6px;
+      border-radius:99px;
+      background:#2f86e5;
+    }
+
+    .expand-wrap{
+      border-radius:16px;
+    }
+
+    .expand-btn{
+      justify-content:space-between;
+      background:#f7f8fa;
+      color:#5f6d79;
+    }
+
+    .expand-left{
+      display:flex;
+      align-items:center;
+      gap:14px;
+    }
+
+    .submenu{
+      display:none;
+      flex-direction:column;
+      padding:10px 0 0 18px;
+      gap:4px;
+    }
+    .submenu.show{display:flex}
+
+    .submenu a{
+      color:#6b7a86;
+      padding:12px 14px;
+      background:transparent;
+    }
+    .submenu a.disabled{
+      color:#d7dde3;
+      pointer-events:none;
+    }
+
+    .menu-bottom{
+      margin-top:auto;
+      padding-top:28px;
+      text-align:center;
+    }
+
+    .slogan{
+      font-family:"Manrope", sans-serif;
+      font-size:clamp(1.2rem, 3vw, 1.8rem);
+      font-weight:700;
+      margin-bottom:26px;
+      background:linear-gradient(90deg,#8b5cf6,#ec4899,#f59e0b);
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
+    }
+
+    .illus{
+      width:100%;
+      max-width:250px;
+      margin:0 auto;
+      display:block;
+    }
+
+    .icon{
+      width:26px;
+      height:26px;
+      flex:0 0 26px;
+      color:currentColor;
+    }
+
+    .arrow{
+      width:20px;
+      height:20px;
+      transition:transform .25s ease;
+    }
+    .expand-btn.open .arrow{transform:rotate(180deg)}
+
+    .hidden{display:none !important}
+
+    .result-title{
+      font-family:"Manrope", sans-serif;
+      font-weight:800;
+      font-size:clamp(2rem, 5vw, 2.8rem);
+      color:var(--primary);
+      margin:0 0 8px;
+      text-align:center;
+      letter-spacing:-.03em;
+    }
+    .result-subtitle{
+      font-weight:500;
+      font-size:clamp(1rem, 2.6vw, 1.35rem);
+      color:#586673;
+      margin:0 0 28px;
+      text-align:center;
+    }
+
+    .result-panel{
+      background:#fff;
+      border-radius:28px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+
+    .result-panel-head{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      background:#eef3fb;
+      padding:18px 20px;
+      font-weight:800;
+      font-size:clamp(1.1rem, 2.5vw, 1.45rem);
+    }
+
+    .result-content{
+      padding:22px 20px 22px;
+    }
+
+    .batch{
+      color:#173b73;
+      font-weight:800;
+      font-size:clamp(1.5rem, 3vw, 1.8rem);
+      margin:0 0 22px;
+    }
+
+    .score-list{
+      border:1px solid #e6e9ee;
+      border-radius:24px;
+      overflow:hidden;
+      background:#fff;
+    }
+
+    .score-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      padding:18px 18px;
+      border-bottom:1px solid #eceff3;
+    }
+    .score-row:last-child{border-bottom:none}
+
+    .score-left{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      min-width:0;
+      flex:1;
+    }
+
+    .pill{
+      min-width:64px;
+      height:34px;
+      padding:0 14px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:600;
+      font-size:1rem;
+      border:1px solid rgba(0,0,0,.06);
+    }
+
+    .pill.toan{background:#eef0ff;color:#5c6498}
+    .pill.li{background:#f8e7e5;color:#9a5f5b}
+    .pill.hoa{background:#e6f6e8;color:#5e8f68}
+    .pill.sinh{background:#f4e4f6;color:#8a5f91}
+    .pill.van{background:#f9efd8;color:#9d8550}
+    .pill.anh{background:#e2f0f6;color:#5b8aa1}
+
+    .subject{
+      font-size:clamp(1rem, 2.2vw, 1.3rem);
+      color:#6b7280;
+      font-weight:500;
+    }
+
+    .score-right{
+      text-align:right;
+      min-width:58px;
+    }
+    .score-number{
+      color:#2576b7;
+      font-weight:800;
+      font-size:clamp(1.8rem, 4vw, 2.4rem);
+      line-height:1;
+    }
+    .score-unit{
+      color:#6f7b87;
+      font-size:.95rem;
+      margin-top:6px;
+    }
+    .score-dash{
+      color:#7a8692;
+      font-size:2rem;
+      line-height:1;
+    }
+
+    .btn-row{
+      padding:30px 0 0;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:20px;
+    }
+
+    .btn-yellow{
+      border:none;
+      min-height:58px;
+      padding:0 24px;
+      border-radius:999px;
+      background:linear-gradient(180deg,#ffbf17,#f2a900);
+      color:#3b2b00;
+      font-weight:800;
+      font-size:clamp(1rem, 2.5vw, 1.3rem);
+      font-family:"Be Vietnam Pro", sans-serif;
+      box-shadow:0 8px 18px rgba(242,169,0,.22);
+      cursor:pointer;
+    }
+
+    .btn-ghost{
+      min-height:56px;
+      padding:0 26px;
+      border-radius:20px;
+      border:2px solid #c7d6dd;
+      color:#3b7ca7;
+      background:#fff;
+      font-weight:700;
+      font-size:clamp(1rem, 2.5vw, 1.2rem);
+      font-family:"Be Vietnam Pro", sans-serif;
+      cursor:pointer;
+    }
+
+    @keyframes fadeUp{
+      from{opacity:0;transform:translateY(18px)}
+      to{opacity:1;transform:translateY(0)}
+    }
+
+    @media (max-width:600px){
+      .page{padding:16px 14px 24px}
+      .profile-card{padding:28px 18px 22px}
+      .details-card{padding:28px 18px 22px}
+      .avatar-mini{width:54px;height:54px;font-size:1.7rem}
+      .menu-item,.expand-btn,.submenu a{font-size:1.02rem}
+      .score-row{padding:16px 14px}
+      .pill{min-width:60px}
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay" id="overlay"></div>
+
+  <aside class="side-sheet" id="sideSheet" aria-hidden="true">
+    <img class="logo" alt="HCMUE logo" src="data:image/svg+xml;utf8,
+      <svg xmlns='http://www.w3.org/2000/svg' width='180' height='70' viewBox='0 0 180 70'>
+        <rect width='180' height='70' fill='white'/>
+        <path d='M14 18h78l28 0-14 12 14 12h-20l-10 10H14z' fill='none' stroke='%230065a9' stroke-width='6' stroke-linejoin='round'/>
+        <text x='42' y='33' font-size='12' font-family='Arial' fill='%230065a9' font-weight='700'>ĐẠI HỌC</text>
+        <text x='42' y='49' font-size='26' font-family='Arial' fill='%00' />
+        <text x='42' y='49' font-size='26' font-family='Arial' fill='%00' />
+        <text x='42' y='49' font-size='26' font-family='Arial' fill='%23d61f26' font-weight='700'>SP</text>
+        <text x='78' y='49' font-size='10' font-family='Arial' fill='%230065a9'>TP HỒ CHÍ MINH</text>
+      </svg>">
+
+    <nav class="sheet-links">
+      <a href="#" class="menu-item active" id="menuProfile">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <rect x="4" y="3" width="16" height="18" rx="2"></rect>
+          <circle cx="12" cy="9" r="2.5"></circle>
+          <path d="M8 17c1.1-2 6.9-2 8 0"></path>
+        </svg>
+        <span>Thông tin thí sinh</span>
+      </a>
+
+      <div class="expand-wrap">
+        <button class="expand-btn" id="expandExam" aria-expanded="false">
+          <span class="expand-left">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M3 10.5 12 5l9 5.5-9 5.5-9-5.5Z"></path>
+              <path d="M7 12.8V16c0 1.5 2.7 3 5 3s5-1.5 5-3v-3.2"></path>
+            </svg>
+            <span>Dự thi ĐGNL chuyên biệt</span>
+          </span>
+          <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m6 9 6 6 6-6"></path>
+          </svg>
+        </button>
+
+        <div class="submenu" id="examSubmenu">
+          <a href="#" class="disabled">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M8 3h8l4 4v13a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"></path>
+              <path d="M16 3v5h5"></path>
+              <path d="M10 13l4 4"></path>
+              <path d="M14 13l-4 4"></path>
+            </svg>
+            <span>Đăng ký dự thi</span>
+          </a>
+
+          <a href="#" id="menuRegisterResult">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <circle cx="12" cy="12" r="9"></circle>
+              <path d="m8.5 12 2.3 2.3 4.7-5.1"></path>
+            </svg>
+            <span>Kết quả đăng ký</span>
+          </a>
+
+          <a href="#" id="menuRoom">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M15 15h6"></path>
+              <path d="M18 12v6"></path>
+              <path d="M10.5 18H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h8l4 4v3"></path>
+              <path d="M13 4v4h4"></path>
+            </svg>
+            <span>Tra cứu phòng thi</span>
+          </a>
+
+          <a href="#" id="menuExamScore">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <rect x="6" y="3" width="12" height="18" rx="2"></rect>
+              <path d="M9 8h6"></path>
+              <path d="M9 12h6"></path>
+              <path d="M9 16h4"></path>
+            </svg>
+            <span>Xem điểm thi</span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="menu-bottom">
+      <div class="slogan">Chất lượng – Sáng tạo – Nhân văn</div>
+      <img class="illus" alt="Minh họa" src="data:image/svg+xml;utf8,
+        <svg xmlns='http://www.w3.org/2000/svg' width='320' height='240' viewBox='0 0 320 240'>
+          <defs>
+            <filter id='s' x='-20%' y='-20%' width='140%' height='140%'>
+              <feDropShadow dx='0' dy='10' stdDeviation='10' flood-color='%23cfd8e3' flood-opacity='.7'/>
+            </filter>
+          </defs>
+          <rect width='320' height='240' fill='white'/>
+          <g filter='url(%23s)'>
+            <rect x='58' y='68' rx='18' ry='18' width='100' height='128' fill='%231ec9f3'/>
+            <rect x='48' y='48' rx='16' ry='16' width='126' height='152' fill='white'/>
+            <circle cx='66' cy='62' r='3' fill='%23f59e0b'/>
+            <circle cx='76' cy='62' r='3' fill='%23ef4444'/>
+            <circle cx='86' cy='62' r='3' fill='%2310b981'/>
+            <rect x='82' y='92' width='60' height='82' rx='12' fill='%2316c6ef'/>
+            <path d='M91 145 C102 129, 111 129, 121 110 S140 97, 144 122' fill='none' stroke='white' stroke-width='4' stroke-linecap='round'/>
+            <rect x='100' y='158' width='24' height='8' rx='4' fill='white'/>
+          </g>
+          <g filter='url(%23s)'>
+            <rect x='160' y='80' rx='16' ry='16' width='116' height='92' fill='white'/>
+            <rect x='177' y='146' width='44' height='44' rx='22' fill='%23ff6f61'/>
+            <path d='M199 167 L214 158 A22 22 0 0 1 217 182 Z' fill='%23f8d24b'/>
+            <path d='M199 167 L183 180 A22 22 0 0 1 177 162 Z' fill='%2310b981'/>
+            <path d='M199 167 L214 182 A22 22 0 0 1 183 180 Z' fill='%232f86e5'/>
+          </g>
+          <g filter='url(%23s)'>
+            <rect x='158' y='44' rx='16' ry='16' width='84' height='90' fill='%23f3f6fa'/>
+            <circle cx='214' cy='64' r='12' fill='%23fde68a'/>
+            <path d='M177 104 194 80 208 98 220 84 238 104Z' fill='%2399d3c7'/>
+          </g>
+          <g filter='url(%23s)'>
+            <rect x='224' y='92' rx='14' ry='14' width='52' height='74' fill='white'/>
+            <circle cx='242' cy='118' r='4' fill='none' stroke='%2394a3b8' stroke-width='2'/>
+            <path d='M246 122l6 6' stroke='%2394a3b8' stroke-width='2'/>
+            <rect x='245' y='130' width='22' height='8' rx='4' fill='%23f7b267'/>
+            <path d='M268 126l9 9' stroke='%23f59e0b' stroke-width='6' stroke-linecap='round'/>
+            <path d='M276 134l5-5' stroke='%23ef4444' stroke-width='6' stroke-linecap='round'/>
+          </g>
+        </svg>">
+    </div>
+  </aside>
+
+  <div class="app">
+    <section class="page" id="profilePage">
+      <header class="topbar">
+        <button class="menu-btn" id="openMenu" aria-label="Mở menu">
+          <span class="hamburger" aria-hidden="true">
+            <span></span><span></span><span></span>
+          </span>
+        </button>
+        <div class="avatar-mini">T</div>
+      </header>
+
+      <section class="panel profile-card">
+        <div class="identity">
+          <div class="avatar-large">T</div>
+          <h1 class="name">Trần Tấn Tài</h1>
+          <p class="meta">Số CCCD: 062208007075</p>
+          <p class="meta">Ngày sinh: 15/09/2008</p>
+          <p class="meta">Email: trantantai373@gmail.com</p>
+        </div>
+
+        <div class="divider"></div>
+
+        <button class="btn-outline" id="changePasswordBtn">Đổi mật khẩu</button>
+      </section>
+
+      <section class="panel details-card">
+        <h2 class="section-title">Thông tin chi tiết</h2>
+        <div class="detail-list">
+          <div>
+            <span class="label">Họ và tên</span>
+            <p class="value">Trần Tấn Tài</p>
+          </div>
+          <div>
+            <span class="label">Số điện thoại</span>
+            <p class="value">0329923789</p>
+          </div>
+          <div>
+            <span class="label">Trường học</span>
+            <p class="value">THPT Nguyễn Văn Cừ, Xã Đăk Tô, Quảng Ngãi</p>
+          </div>
+          <div>
+            <span class="label">Ngày đăng ký tài khoản</span>
+            <p class="value">03/04/2026 17:03:59</p>
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <a href="javascript:void(0)">Điều khoản sử dụng</a>
+        <div class="copyright">© 2026 Trường Đại học Sư phạm TP.HCM</div>
+      </footer>
+    </section>
+
+    <section class="page hidden" id="resultPage">
+      <header class="topbar">
+        <button class="menu-btn menu-open-again" aria-label="Mở menu">
+          <span class="hamburger" aria-hidden="true">
+            <span></span><span></span><span></span>
+          </span>
+        </button>
+        <div class="avatar-mini">T</div>
+      </header>
+
+      <h1 class="result-title">Kết quả dự thi</h1>
+      <p class="result-subtitle">Xem và quản lý kết quả thi của bạn</p>
+
+      <section class="result-panel">
+        <div class="result-panel-head">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="#2576b7" stroke-width="2">
+            <path d="M4 6h7"></path>
+            <path d="M4 12h7"></path>
+            <path d="M4 18h7"></path>
+            <path d="m15 6 2 2 4-4"></path>
+            <path d="m15 12 2 2 4-4"></path>
+          </svg>
+          <span>Thông tin kết quả thi</span>
+        </div>
+
+        <div class="result-content">
+          <h2 class="batch">Đợt 2</h2>
+
+          <div class="score-list">
+            <div class="score-row">
+              <div class="score-left">
+                <span class="pill toan">Toán</span>
+                <span class="subject">Toán học</span>
+              </div>
+              <div class="score-right">
+                <div class="score-number">8</div>
+                <div class="score-unit">điểm</div>
+              </div>
+            </div>
+
+            <div class="score-row">
+              <div class="score-left">
+                <span class="pill li">Lí</span>
+                <span class="subject">Vật lí</span>
+              </div>
+              <div class="score-right">
+                <div class="score-dash">–</div>
+              </div>
+            </div>
+
+            <div class="score-row">
+              <div class="score-left">
+                <span class="pill hoa">Hóa</span>
+                <span class="subject">Hóa học</span>
+              </div>
+              <div class="score-right">
+                <div class="score-number">7.5</div>
+                <div class="score-unit">điểm</div>
+              </div>
+            </div>
+
+            <div class="score-row">
+              <div class="score-left">
+                <span class="pill sinh">Sinh</span>
+                <span class="subject">Sinh học</span>
+              </div>
+              <div class="score-right">
+                <div class="score-dash">–</div>
+              </div>
+            </div>
+
+            <div class="score-row">
+              <div class="score-left">
+                <span class="pill van">Văn</span>
+                <span class="subject">Ngữ văn</span>
+              </div>
+              <div class="score-right">
+                <div class="score-dash">–</div>
+              </div>
+            </div>
+
+            <div class="score-row">
+              <div class="score-left">
+                <span class="pill anh">Anh</span>
+                <span class="subject">Tiếng Anh</span>
+              </div>
+              <div class="score-right">
+                <div class="score-dash">–</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="btn-row">
+            <button class="btn-yellow" id="remarkBtn">🧾&nbsp;&nbsp;Đăng ký phúc khảo</button>
+            <button class="btn-ghost" id="surveyBtn">Xem lại khảo sát</button>
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <a href="javascript:void(0)">Điều khoản sử dụng</a>
+        <div class="copyright">© 2026 Trường Đại học Sư phạm TP.HCM</div>
+      </footer>
+    </section>
+  </div>
+
+  <script>
+    const openMenuBtns = document.querySelectorAll('#openMenu, .menu-open-again');
+    const sideSheet = document.getElementById('sideSheet');
+    const overlay = document.getElementById('overlay');
+    const pages = document.querySelectorAll('.page');
+
+    const expandExam = document.getElementById('expandExam');
+    const examSubmenu = document.getElementById('examSubmenu');
+    const menuProfile = document.getElementById('menuProfile');
+    const menuExamScore = document.getElementById('menuExamScore');
+
+    const profilePage = document.getElementById('profilePage');
+    const resultPage = document.getElementById('resultPage');
+
+    function setBlur(state){
+      pages.forEach(p => p.classList.toggle('blurred', state));
+    }
+
+    function openMenu(){
+      sideSheet.classList.add('open');
+      overlay.classList.add('show');
+      sideSheet.setAttribute('aria-hidden','false');
+      setBlur(true);
+    }
+
+    function closeMenu(){
+      sideSheet.classList.remove('open');
+      overlay.classList.remove('show');
+      sideSheet.setAttribute('aria-hidden','true');
+      setBlur(false);
+    }
+
+    openMenuBtns.forEach(btn => btn.addEventListener('click', openMenu));
+    overlay.addEventListener('click', closeMenu);
+    document.addEventListener('keydown', e => {
+      if(e.key === 'Escape') closeMenu();
+    });
+
+    expandExam.addEventListener('click', () => {
+      const isOpen = examSubmenu.classList.contains('show');
+      examSubmenu.classList.toggle('show');
+      expandExam.classList.toggle('open');
+      expandExam.setAttribute('aria-expanded', String(!isOpen));
+    });
+
+    function showProfile(){
+      profilePage.classList.remove('hidden');
+      resultPage.classList.add('hidden');
+      menuProfile.classList.add('active');
+      closeMenu();
+    }
+
+    function showResult(){
+      resultPage.classList.remove('hidden');
+      profilePage.classList.add('hidden');
+      examSubmenu.classList.add('show');
+      expandExam.classList.add('open');
+      expandExam.setAttribute('aria-expanded', 'true');
+      closeMenu();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    menuProfile.addEventListener('click', (e) => {
+      e.preventDefault();
+      showProfile();
+    });
+
+    menuExamScore.addEventListener('click', (e) => {
+      e.preventDefault();
+      showResult();
+    });
+
+    document.getElementById('changePasswordBtn').addEventListener('click', () => {
+      alert('Chức năng đổi mật khẩu đang được phát triển.');
+    });
+
+    document.getElementById('remarkBtn').addEventListener('click', () => {
+      alert('Chức năng đăng ký phúc khảo đang được phát triển.');
+    });
+
+    document.getElementById('surveyBtn').addEventListener('click', () => {
+      alert('Chức năng xem lại khảo sát đang được phát triển.');
+    });
+  </script>
+</body>
+</html>
